@@ -47,7 +47,12 @@ class BeanstalkdJob extends Job {
 	 */
 	public function fire()
 	{
-		$this->resolveAndFire(json_decode($this->getRawBody(), true));
+		$data = json_decode($this->getRawBody(), true);
+		if (!is_array($data)) {
+				$this->delete();
+				throw new \Exception('Malformed job data: '.$this->getRawBody());
+		}
+		$this->resolveAndFire($data);
 	}
 
 	/**
